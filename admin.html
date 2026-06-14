@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masala Mantra Admin Dashboard | Event Management</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Custom Admin styles extending our Obsidian-Gold theme */
+        body {
+            background-color: var(--bg-dark, #0b0c10);
+            color: var(--text-light, #f5f5f5);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none; /* Hidden until passcode verified */
+        }
+
+        header.admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        header.admin-header h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-primary, #d4af37);
+            font-size: 2.2rem;
+            margin: 0;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--gold-primary, #d4af37);
+            color: var(--gold-primary, #d4af37);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: var(--gold-primary, #d4af37);
+            color: #0b0c10;
+        }
+
+        /* Metrics grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gold-primary, #d4af37);
+        }
+
+        .metric-card h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #888;
+            margin: 0 0 10px 0;
+        }
+
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .metric-card .gold-value {
+            color: var(--gold-primary, #d4af37);
+        }
+
+        /* Controls / Filter section */
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .controls-panel input, .controls-panel select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .controls-panel select option,
+        .status-select option {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .controls-panel input:focus, .controls-panel select:focus {
+            border-color: var(--gold-primary, #d4af37);
+        }
+
+        .controls-panel input[type="text"] {
+            flex-grow: 1;
+            min-width: 250px;
+        }
+
+        /* Table design */
+        .table-container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        table.admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        table.admin-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--gold-primary, #d4af37);
+            font-weight: 600;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 0.5px;
+        }
+
+        table.admin-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        table.admin-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pending { background: rgba(255, 152, 0, 0.15); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.3); }
+        .badge-contacted { background: rgba(33, 150, 243, 0.15); color: #2196f3; border: 1px solid rgba(33, 150, 243, 0.3); }
+        .badge-confirmed { background: rgba(76, 175, 80, 0.15); color: #4caf50; border: 1px solid rgba(76, 175, 80, 0.3); }
+        .badge-cancelled { background: rgba(244, 67, 54, 0.15); color: #f44336; border: 1px solid rgba(244, 67, 54, 0.3); }
+
+        .type-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #aaa;
+            background: rgba(255, 255, 255, 0.07);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .type-booking {
+            color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        /* Dropdown status changer */
+        .status-select {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s, background-color 0.3s;
+            color: #fff;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-whatsapp { background: #25d366; }
+        .btn-email { background: #0078d4; }
+        .btn-delete { background: #d9534f; }
+
+        .btn-action svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        /* Gate lock screen overlay */
+        .lockscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b0c10;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lockscreen-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .lockscreen-box h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-primary, #d4af37);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .lockscreen-box input[type="password"] {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            outline: none;
+            margin-bottom: 20px;
+        }
+
+        .lockscreen-box input[type="password"]:focus {
+            border-color: var(--gold-primary, #d4af37);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #d4af37 0%, #b2902b 100%);
+            border: none;
+            color: #0b0c10;
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .btn-login:hover {
+            opacity: 0.9;
+        }
+
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .notes-preview {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #bbb;
+            cursor: help;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Lock Screen passcode Gate -->
+    <div class="lockscreen-overlay" id="lockscreen">
+        <div class="lockscreen-box">
+            <h2>Admin Portal Access</h2>
+            <p style="color: #888; font-size: 0.9rem; margin-bottom: 25px;">Enter the passcode to retrieve the event inquiries and database logs.</p>
+            <form id="login-form">
+                <input type="password" id="admin-passcode" placeholder="••••••••" required>
+                <button type="submit" class="btn-login">Unlock Dashboard</button>
+                <div class="error-msg" id="login-error">Invalid passcode! Please try again.</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Container -->
+    <div class="admin-container" id="admin-dashboard">
+        <header class="admin-header">
+            <div>
+                <h1>Masala Mantra</h1>
+                <p style="color: #888; margin: 5px 0 0 0;">Kamothe Banquet Hall — Event Admin Portal</p>
+            </div>
+            <button class="btn-logout" id="btn-logout">Lock Panel</button>
+        </header>
+
+        <!-- Stats Counter Cards -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <h3>Total Submissions</h3>
+                <p class="value" id="stat-total">0</p>
+            </div>
+            <div class="metric-card">
+                <h3>Revenue Potential</h3>
+                <p class="value gold-value" id="stat-revenue">₹0</p>
+            </div>
+            <div class="metric-card">
+                <h3>Pending Actions</h3>
+                <p class="value" id="stat-pending" style="color: #ff9800;">0</p>
+            </div>
+            <div class="metric-card">
+                <h3>Confirmed Bookings</h3>
+                <p class="value" id="stat-confirmed" style="color: #4caf50;">0</p>
+            </div>
+        </section>
+
+        <!-- Filters and Searching -->
+        <section class="controls-panel">
+            <input type="text" id="search-filter" placeholder="Search by name, phone, email, reference code...">
+            
+            <select id="type-filter">
+                <option value="all">All Inquiries</option>
+                <option value="booking">Calculator Bookings</option>
+                <option value="contact">Site Tour Inquiries</option>
+            </select>
+
+            <select id="status-filter">
+                <option value="all">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Contacted">Contacted</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </section>
+
+        <!-- Data Table Container -->
+        <section class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Date & Reference</th>
+                        <th>Client Details</th>
+                        <th>Event Specifications</th>
+                        <th>Estimated Cost</th>
+                        <th>Status</th>
+                        <th>Manage</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Dynamic rows inserted here -->
+                </tbody>
+            </table>
+            <div id="table-empty" class="empty-state" style="display: none;">
+                No inquiries or bookings match the active filters.
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let allData = [];
+        let activePasscode = '';
+
+        // Check if passcode is saved in session storage
+        const savedPasscode = sessionStorage.getItem('admin_passcode');
+        if (savedPasscode) {
+            verifyAndUnlock(savedPasscode);
+        }
+
+        // Form Submit Login Gate
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('admin-passcode');
+            verifyAndUnlock(input.value);
+        });
+
+        // Logout
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            sessionStorage.removeItem('admin_passcode');
+            document.getElementById('lockscreen').style.display = 'flex';
+            document.getElementById('admin-dashboard').style.display = 'none';
+            document.getElementById('admin-passcode').value = '';
+            activePasscode = '';
+        });
+
+        // Verify Passcode API Fetch
+        function verifyAndUnlock(passcode) {
+            const errorDiv = document.getElementById('login-error');
+            errorDiv.style.display = 'none';
+
+            fetch('/api/admin/inquiries', {
+                method: 'GET',
+                headers: { 'X-Admin-Passcode': passcode }
+            })
+            .then(res => {
+                if (res.status === 401) {
+                    throw new Error('Unauthorized');
+                }
+                if (!res.ok) {
+                    throw new Error('Server error');
+                }
+                return res.json();
+            })
+            .then(data => {
+                activePasscode = passcode;
+                sessionStorage.setItem('admin_passcode', passcode);
+                allData = data;
+                
+                // Hide login box, show dashboard
+                document.getElementById('lockscreen').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+                
+                // Render Page
+                renderDashboard();
+            })
+            .catch(err => {
+                console.error(err);
+                errorDiv.style.display = 'block';
+                sessionStorage.removeItem('admin_passcode');
+            });
+        }
+
+        // Refresh Data from backend
+        function refreshData() {
+            if (!activePasscode) return;
+            fetch('/api/admin/inquiries', {
+                method: 'GET',
+                headers: { 'X-Admin-Passcode': activePasscode }
+            })
+            .then(res => res.json())
+            .then(data => {
+                allData = data;
+                renderDashboard();
+            })
+            .catch(err => console.error('Error refreshing admin data:', err));
+        }
+
+        // Calculate and Render Dashboard Stats + Table rows
+        function renderDashboard() {
+            // Calculate stats
+            let total = allData.length;
+            let pending = allData.filter(d => d.status === 'Pending').length;
+            let confirmed = allData.filter(d => d.status === 'Confirmed').length;
+            
+            let revenueSum = 0;
+            allData.forEach(d => {
+                if (d.status !== 'Cancelled' && d.estimated_cost) {
+                    // Extract integers from cost e.g. "₹1,68,150" -> 168150
+                    let num = parseInt(d.estimated_cost.replace(/[^0-9]/g, '')) || 0;
+                    revenueSum += num;
+                }
+            });
+
+            // Set counter elements
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-pending').innerText = pending;
+            document.getElementById('stat-confirmed').innerText = confirmed;
+            document.getElementById('stat-revenue').innerText = new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0
+            }).format(revenueSum);
+
+            // Filter data
+            const searchText = document.getElementById('search-filter').value.toLowerCase();
+            const typeFilter = document.getElementById('type-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+
+            let filtered = allData.filter(item => {
+                // Type filter
+                if (typeFilter !== 'all' && item.type !== typeFilter) return false;
+                
+                // Status filter
+                if (statusFilter !== 'all' && item.status !== statusFilter) return false;
+
+                // Search text filter
+                if (searchText) {
+                    const name = (item.name || '').toLowerCase();
+                    const phone = (item.phone || '').toLowerCase();
+                    const email = (item.email || '').toLowerCase();
+                    const ref = (item.ref_code || '').toLowerCase();
+                    const note = (item.notes || '').toLowerCase();
+                    
+                    return name.includes(searchText) || phone.includes(searchText) || email.includes(searchText) || ref.includes(searchText) || note.includes(searchText);
+                }
+                return true;
+            });
+
+            // Populate Table
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                document.getElementById('table-empty').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('table-empty').style.display = 'none';
+            }
+
+            filtered.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                // Format date
+                const rawDate = new Date(row.created_at || Date.now());
+                const formattedDate = rawDate.toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                // Set type badge class
+                const isBooking = row.type === 'booking';
+                const typeLabel = isBooking ? 'Calculator Booking' : 'Site Tour';
+                const typeClass = isBooking ? 'type-badge type-booking' : 'type-badge';
+
+                // Display theme & spec text
+                let specsHtml = '';
+                if (isBooking) {
+                    specsHtml = `
+                        <div style="font-weight: 600; color: #fff;">${row.event_type.toUpperCase()}</div>
+                        <div style="font-size:0.8rem; color:#aaa;">Guests: ${row.guests} | Session: ${row.session}</div>
+                        <div style="font-size:0.75rem; color:var(--gold-primary); margin-top:2px;">Theme: ${row.theme}</div>
+                    `;
+                } else {
+                    specsHtml = `
+                        <div style="font-weight: 600; color: #fff;">Tour Walkthrough Request</div>
+                        <div style="font-size:0.8rem; color:#aaa;">Event Style: ${row.event_type || 'General'}</div>
+                    `;
+                }
+
+                // Addons list
+                if (row.addons) {
+                    specsHtml += `<div style="font-size: 0.75rem; color: #888; margin-top:4px;">Addons: ${row.addons}</div>`;
+                }
+
+                // Tooltip on notes if long
+                const noteText = row.notes || 'None';
+                const notesPreview = noteText.length > 30 
+                    ? `<div class="notes-preview" title="${noteText.replace(/"/g, '&quot;')}">Notes: ${noteText}</div>`
+                    : `<div style="font-size: 0.8rem; color: #bbb;">Notes: ${noteText}</div>`;
+
+                // WhatsApp text template
+                const waText = isBooking 
+                    ? `Hello ${row.name}, thank you for contacting Masala Mantra Banquet Hall. We received your dynamic booking reservation for a ${row.event_type} event on ${row.date} (Estimated Guest Load: ${row.guests} guests, Ref: ${row.ref_code}). We would love to discuss this with you. Please let us know a suitable time to connect!`
+                    : `Hello ${row.name}, thank you for contacting Masala Mantra Banquet Hall. We received your request for a site walkthrough tour. We would love to schedule your visit. Please let us know a suitable date and time!`;
+                
+                const waCleanNumber = cleanPhoneNumber(row.phone);
+                const waLink = `https://api.whatsapp.com/send?phone=${waCleanNumber}&text=${encodeURIComponent(waText)}`;
+                
+                // Mailto template
+                const mailSubject = `Masala Mantra Banquet Hall Enquiry (Ref: ${row.ref_code || 'TOUR'})`;
+                const mailLink = `mailto:${row.email}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(waText)}`;
+
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight: 600; color: #fff;">${row.ref_code || 'TOUR-LEAD'}</div>
+                        <div style="font-size: 0.75rem; color: #888; margin-top: 4px;">${formattedDate}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; color: #fff;">${row.name}</div>
+                        <div style="font-size: 0.8rem; color: #aaa;">Phone: ${row.phone}</div>
+                        <div style="font-size: 0.8rem; color: #aaa;">Email: ${row.email || 'N/A'}</div>
+                    </td>
+                    <td>
+                        ${specsHtml}
+                        ${notesPreview}
+                    </td>
+                    <td style="font-weight: 700; color: ${isBooking ? 'var(--gold-primary)' : '#aaa'}">
+                        ${row.estimated_cost || 'N/A'}
+                    </td>
+                    <td>
+                        <span class="badge badge-${row.status.toLowerCase()}">${row.status}</span>
+                    </td>
+                    <td>
+                        <select class="status-select" data-id="${row.id}">
+                            <option value="Pending" ${row.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="Contacted" ${row.status === 'Contacted' ? 'selected' : ''}>Contacted</option>
+                            <option value="Confirmed" ${row.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                            <option value="Cancelled" ${row.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            <a href="${waLink}" target="_blank" class="btn-action btn-whatsapp" title="Contact via WhatsApp">
+                                <svg viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.964 9.964 0 0 0 1.333 4.993L2 22l5.233-1.371a9.936 9.936 0 0 0 4.779 1.229h.004c5.505 0 9.988-4.478 9.989-9.984C22.007 6.478 17.521 2 12.012 2zm6.757 14.162c-.276.778-1.393 1.428-1.923 1.517-.481.082-.998.113-2.932-.652-2.478-.977-4.062-3.504-4.187-3.668-.124-.165-1.013-1.348-1.013-2.567 0-1.22.637-1.819.865-2.06.228-.24.498-.3.664-.3.166 0 .332.001.477.008.151.008.353-.057.553.424.205.492.702 1.705.763 1.828.061.123.101.266.02.429-.082.164-.124.266-.245.41-.122.143-.257.32-.366.429-.12.12-.245.251-.106.491.139.24.618 1.015 1.326 1.646.911.812 1.677 1.063 1.916 1.183.24.12.38.102.522-.062.143-.164.614-.717.778-.962.163-.246.327-.205.55-.123.225.082 1.42.67 1.666.793.246.123.409.184.47.287.061.102.061.594-.215 1.372z"/></svg>
+                            </a>
+                            <a href="${mailLink}" class="btn-action btn-email" title="Email Client">
+                                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            </a>
+                            <button class="btn-action btn-delete" data-id="${row.id}" title="Delete Record">
+                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+
+            // Bind Event Listeners on Table Rows inputs
+            bindTableInteraction();
+        }
+
+        // Clean phone string helper
+        function cleanPhoneNumber(phone) {
+            let cleaned = phone.replace(/[^0-9]/g, '');
+            // Default India prefix
+            if (cleaned.length === 10) {
+                cleaned = '91' + cleaned;
+            }
+            return cleaned;
+        }
+
+        // Table Change listeners
+        function bindTableInteraction() {
+            // Status update
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const inquiryId = e.target.getAttribute('data-id');
+                    const newStatus = e.target.value;
+
+                    fetch('/api/admin/update_status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Admin-Passcode': activePasscode
+                        },
+                        body: JSON.stringify({ id: inquiryId, status: newStatus })
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Failed to update status');
+                        return res.json();
+                    })
+                    .then(data => {
+                        // Refresh data locally
+                        refreshData();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Error updating status on server.');
+                    });
+                });
+            });
+
+            // Delete record
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const btnEl = e.target.closest('.btn-delete');
+                    const inquiryId = btnEl.getAttribute('data-id');
+                    
+                    if (confirm('Are you sure you want to permanently delete this record from the MySQL database?')) {
+                        fetch('/api/admin/delete', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Admin-Passcode': activePasscode
+                            },
+                            body: JSON.stringify({ id: inquiryId })
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error('Deletion failed');
+                            return res.json();
+                        })
+                        .then(data => {
+                            refreshData();
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Error deleting inquiry.');
+                        });
+                    }
+                });
+            });
+        }
+
+        // Bind filter event handlers
+        document.getElementById('search-filter').addEventListener('input', renderDashboard);
+        document.getElementById('type-filter').addEventListener('change', renderDashboard);
+        document.getElementById('status-filter').addEventListener('change', renderDashboard);
+    </script>
+</body>
+</html>

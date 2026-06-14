@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Masala Mantra Kamothe Banquet Hall - The premier venue for luxury weddings, corporate events, receptions, and social celebrations. Estimate your custom event budget and reserve your date online.">
+    <title>Masala Mantra Kamothe Banquet Hall | Luxury Event Venue</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header / Navigation -->
+    <header id="main-header">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24"
+                    style="fill: none; stroke: var(--gold-primary); stroke-width: 1.5;">
+                    <circle cx="12" cy="12" r="10" stroke="var(--gold-primary)" />
+                    <circle cx="12" cy="12" r="8" stroke="var(--gold-primary)" stroke-dasharray="1 1" />
+                    <path d="M8.5 7.5a1.5 2 0 0 1 0 3v4.5" stroke="currentColor" stroke-linecap="round" />
+                    <path d="M12 7v8" stroke="currentColor" stroke-linecap="round" />
+                    <path d="M15 7v4c0 .5.3.8.7.8V15" stroke="currentColor" stroke-linecap="round" />
+                </svg>
+                <span class="logo-text">Masala Mantra</span>
+            </a>
+
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#" class="nav-link active">Home</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#gallery" class="nav-link">Showcase</a></li>
+                <li><a href="#estimator" class="nav-link">Estimator</a></li>
+                <li><a href="#testimonials" class="nav-link">Reviews</a></li>
+                <li><a href="#faq" class="nav-link">FAQs</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="#estimator" class="btn-nav-cta">Plan Event</a></li>
+            </ul>
+
+            <div class="menu-toggle" id="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-overlay"></div>
+        <img class="hero-bg" src="real_hall.jpg" alt="Masala Mantra Grand Ballroom Setup">
+
+        <div class="hero-content">
+            <h5 class="hero-tagline">Exquisite Venues & Handcrafted Celebrations</h5>
+            <h1 class="hero-title">Where Grand Visions Meet <span class="text-gold">Flawless Reality</span></h1>
+            <p class="hero-desc">Discover Masala Mantra Kamothe Banquet Hall—a sanctuary of sophisticated elegance,
+                bespoke
+                catering, and impeccable hospitality designed for your life's most precious celebrations.</p>
+            <div class="hero-actions">
+                <a href="#estimator" class="btn-primary">Calculate Estimate</a>
+                <a href="#gallery" class="btn-outline">Explore Galleries</a>
+            </div>
+        </div>
+
+        <!-- Quick Inquiry Widget -->
+        <div class="quick-inquiry-box">
+            <div class="inquiry-group">
+                <label for="quick-event">Event Type</label>
+                <select id="quick-event">
+                    <option value="wedding">Grand Wedding</option>
+                    <option value="corporate">Corporate Gala / Seminar</option>
+                    <option value="social">Anniversary / Social</option>
+                    <option value="reception">Cocktail & Reception</option>
+                </select>
+            </div>
+            <div class="inquiry-group">
+                <label for="quick-guests">Guests</label>
+                <select id="quick-guests">
+                    <option value="30-100">30 - 100 Guests</option>
+                    <option value="100-250">100 - 250 Guests</option>
+                    <option value="250-400">250 - 400 Guests</option>
+                </select>
+            </div>
+            <div class="inquiry-group">
+                <label for="quick-date">Select Date</label>
+                <input type="date" id="quick-date">
+            </div>
+            <div class="inquiry-group">
+                <label for="quick-session">Time Slot</label>
+                <select id="quick-session">
+                    <option value="morning">Morning (9 AM - 4 PM)</option>
+                    <option value="evening">Evening (6 PM - Midnight)</option>
+                    <option value="fullday">Full Day Reservation</option>
+                </select>
+            </div>
+            <button type="button" class="btn-primary" id="btn-quick-inquiry">Check Availability</button>
+        </div>
+    </section>
+
+    <!-- Features / Highlights Section -->
+    <section id="features">
+        <div class="section-header">
+            <h2>Our Venues & Amenities</h2>
+            <p>Every corner at Masala Mantra is engineered to deliver excellence, styling, and premium comforts for you
+                and your
+                esteemed guests.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">
+                    <svg class="feature-icon" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="none" stroke="currentColor" stroke-width="2" />
+                        <path d="M2 17L12 22L22 17" fill="none" stroke="currentColor" stroke-width="2" />
+                        <path d="M2 12L12 17L22 12" fill="none" stroke="currentColor" stroke-width="2" />
+                    </svg>
+                </div>
+                <h3>Grand Ballrooms</h3>
+                <p>Luxurious pillar-less high ceiling halls catering up to 1,200 guests with fully integrated central
+                    air conditioning.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">
+                    <svg class="feature-icon" viewBox="0 0 24 24">
+                        <path d="M3 21h18M5 21V11m4 10V7m4 10V14m4 7V9m4 12V5" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                        <path d="M5 11c1-2 3-2 4-2m4 5c1-2 3-2 4-2m0-3c1-2 3-2 4-2" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <h3>Scenic Royal Lawns</h3>
+                <p>Beautiful manicured dynamic outdoor lawns framed by starlight backdrops, perfect for wedding vows and
+                    large-scale buffets.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">
+                    <svg class="feature-icon" viewBox="0 0 24 24">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <h3>Epicurean Menus</h3>
+                <p>Custom tailored menus combining regional fine dining with international cuisines, curated by elite
+                    executive chefs.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">
+                    <svg class="feature-icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                        <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <h3>Valet & Parking</h3>
+                <p>Secured multi-level car parking area accommodating up to 400 vehicles, managed by professional prompt
+                    valet agents.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Virtual Showcase Gallery -->
+    <section id="gallery" class="section-dark">
+        <div class="section-header">
+            <h2>The Exquisite Showcase</h2>
+            <p>Walk through our curated collection of real-life celebrations and architectural setups.</p>
+        </div>
+
+        <div class="showcase-filters">
+            <button class="filter-btn active" data-filter="all">All Halls</button>
+            <button class="filter-btn" data-filter="wedding">Banquet Hall</button>
+            <button class="filter-btn" data-filter="community">Community Hall</button>
+            <button class="filter-btn" data-filter="dining">Dining & Lounge</button>
+            <button class="filter-btn" data-filter="terrace">Terrace Deck</button>
+        </div>
+
+        <div class="showcase-grid">
+            <div class="showcase-item" data-category="wedding">
+                <img class="showcase-img" src="real_stage.jpg" alt="Masala Mantra Grand Wedding Setup">
+                <div class="showcase-overlay">
+                    <span class="showcase-tag">Banquet Hall</span>
+                    <h3>The Grand Banquet Hall</h3>
+                    <p>Bespoke elegant setup featuring clean, air-conditioned layouts and luxury decor panels.</p>
+                    <div class="showcase-capacity">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm11 11v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        Capacity: 150 - 400 Guests
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-item" data-category="community">
+                <img class="showcase-img" src="real_entrance.png" alt="Pre-wedding setup">
+                <div class="showcase-overlay">
+                    <span class="showcase-tag">Community Hall</span>
+                    <h3>The Community Hall</h3>
+                    <p>Spacious, welcoming hall ideal for Sangeet, Haldi, Mehendi, and family gatherings.</p>
+                    <div class="showcase-capacity">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm11 11v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        Capacity: 80 - 200 Guests
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-item" data-category="dining">
+                <img class="showcase-img" src="real_dining.jpg" alt="Mughlai Dining Area">
+                <div class="showcase-overlay">
+                    <span class="showcase-tag">Dining & Lounge</span>
+                    <h3>Mughlai Dining Lounge</h3>
+                    <p>Indulge in premium in-house catering layouts serving authentic North Indian and Mughlai buffet
+                        tiers.</p>
+                    <div class="showcase-capacity">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm11 11v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        Capacity: 40 - 120 Guests
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-item" data-category="terrace">
+                <img class="showcase-img" src="real_buffet.png" alt="Open-Air Terrace">
+                <div class="showcase-overlay">
+                    <span class="showcase-tag">Terrace Deck</span>
+                    <h3>Open-Air Terrace Deck</h3>
+                    <p>Cozy open-sky terrace optimized for evening birthday parties and cocktail tables under stars.</p>
+                    <div class="showcase-capacity">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm11 11v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        Capacity: 50 - 150 Guests
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Budget Estimator -->
+    <section id="estimator">
+        <div class="section-header">
+            <h2>Interactive Event Budget Estimator</h2>
+            <p>Customize your event scope, choose the catering standards, select custom modules, and calculate your
+                estimate instantly.</p>
+        </div>
+
+        <div class="estimator-container">
+            <!-- Left Side Inputs Form -->
+            <div class="estimator-form">
+
+                <!-- Step 1: Select Event Style -->
+                <div class="estimator-group">
+                    <h3>1. Select Celebration Type</h3>
+                    <div class="pricing-options-grid">
+                        <label class="option-card selected">
+                            <input type="radio" name="estimator-event" value="wedding" checked>
+                            <h4>Royal Wedding</h4>
+                            <p>Grand decor configurations & stage setups</p>
+                            <span class="price">Base: ₹2,50,000</span>
+                        </label>
+
+                        <label class="option-card">
+                            <input type="radio" name="estimator-event" value="corporate">
+                            <h4>Corporate Gala</h4>
+                            <p>Integrated screens, high-end sound & systems</p>
+                            <span class="price">Base: ₹1,80,000</span>
+                        </label>
+
+                        <label class="option-card">
+                            <input type="radio" name="estimator-event" value="social">
+                            <h4>Social Celebration</h4>
+                            <p>Intimate decorations and flexible lounge seats</p>
+                            <span class="price">Base: ₹1,20,000</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 2: Guest Count Slider -->
+                <div class="estimator-group">
+                    <h3>2. Estimated Guest Capacity</h3>
+                    <div class="slider-wrapper">
+                        <span class="slider-val-bubble" id="guest-count-bubble">150 Guests</span>
+                        <input type="range" class="gold-slider" id="guest-slider" min="30" max="400" step="10"
+                            value="150">
+                    </div>
+                </div>
+
+                <!-- Step 3: Food / Gastronomy Tiers -->
+                <div class="estimator-group">
+                    <h3>3. Gastronomy & Catering Tiers</h3>
+                    <div class="pricing-options-grid">
+                        <label class="option-card selected">
+                            <input type="radio" name="estimator-catering" value="classic" checked>
+                            <h4>Classic Banquet</h4>
+                            <p>Welcome drinks, 3 starters, 4 main courses, 2 desserts</p>
+                            <span class="price">₹800 / Guest</span>
+                        </label>
+
+                        <label class="option-card">
+                            <input type="radio" name="estimator-catering" value="elite">
+                            <h4>Elite Fine Dine</h4>
+                            <p>Mocktail lounge, 5 starters, 6 main courses, live counters, 3 desserts</p>
+                            <span class="price">₹1,200 / Guest</span>
+                        </label>
+
+                        <label class="option-card">
+                            <input type="radio" name="estimator-catering" value="imperial">
+                            <h4>Imperial Luxury</h4>
+                            <p>Champagne arrival, gourmet global fusion, multi-tier desserts</p>
+                            <span class="price">₹2,200 / Guest</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 4: Special Add-ons -->
+                <div class="estimator-group">
+                    <h3>4. Curated Custom Add-ons</h3>
+                    <div class="pricing-options-grid">
+                        <label class="option-card">
+                            <input type="checkbox" name="estimator-addon" value="av" data-price="45000">
+                            <h4>AV & DJ Acoustics</h4>
+                            <p>JBL sound system, moving head lights & DJ deck</p>
+                            <span class="price">+₹45,000</span>
+                        </label>
+
+                        <label class="option-card">
+                            <input type="checkbox" name="estimator-addon" value="decor" data-price="90000">
+                            <h4>Thematic Decor</h4>
+                            <p>Custom flowers, designer stage setup & luxury drapes</p>
+                            <span class="price">+₹90,000</span>
+                        </label>
+
+                        <label class="option-card">
+                            <input type="checkbox" name="estimator-addon" value="photo" data-price="60000">
+                            <h4>Cinematography</h4>
+                            <p>2 Photographers, 1 Videographer & pre-event shoot</p>
+                            <span class="price">+₹60,000</span>
+                        </label>
+
+                        <label class="option-card">
+                            <input type="checkbox" name="estimator-addon" value="valet" data-price="15000">
+                            <h4>Valet Parking</h4>
+                            <p>Reserved zone parking, 4 valets & supervisor</p>
+                            <span class="price">+₹15,000</span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Side Estimated Invoice -->
+            <div class="estimator-summary">
+                <div>
+                    <h3>Estimated Quote</h3>
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span>Base Venue Hire:</span>
+                            <span id="summary-base">₹75,000</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Catering & Food (<span id="summary-guest-count">150</span> guests):</span>
+                            <span id="summary-catering">₹67,500</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Custom Add-ons:</span>
+                            <span id="summary-addons">₹0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Service Tax & Admin (18%):</span>
+                            <span id="summary-tax">₹25,650</span>
+                        </div>
+                        <div class="summary-row total">
+                            <div>Estimated Total:</div>
+                            <div class="summary-price-tag" id="summary-total">₹1,68,150</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-primary" id="btn-open-booking">Enquire Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Carousel Section -->
+    <section id="testimonials" class="section-dark">
+        <div class="section-header">
+            <h2>Words From Our Celebrants</h2>
+            <p>Our greatest achievement is the smiles and gratitude of families who celebrated their milestones at
+                Masala Mantra.
+            </p>
+        </div>
+
+        <div class="testimonials-container">
+            <div class="carousel-track" id="carousel-track">
+                <!-- Slide 1 -->
+                <div class="testimonial-slide">
+                    <div class="testimonial-card">
+                        <div class="testimonial-avatar-placeholder">A&R</div>
+                        <p class="testimonial-quote">"We hosted our wedding reception in the Imperial Ballroom. The
+                            luxury gold decorations and the elite catering panel left our guests absolutely spellbound.
+                            The team managed 900 guests with flawless hospitality!"</p>
+                        <h4 class="testimonial-author">Aishwarya & Rahul</h4>
+                        <span class="testimonial-event">Wedding Reception — Dec 2025</span>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="testimonial-slide">
+                    <div class="testimonial-card">
+                        <div class="testimonial-avatar-placeholder">VS</div>
+                        <p class="testimonial-quote">"The Sovereign Hall was the perfect choice for our Annual Tech
+                            Summit. Built-in high-quality AV screens, crystal clear audio, and the fusion buffet
+                            catering made it extremely seamless. Highly recommended."</p>
+                        <h4 class="testimonial-author">Vikram Singhania</h4>
+                        <span class="testimonial-event">CEO, Singhania Technologies — March 2026</span>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="testimonial-slide">
+                    <div class="testimonial-card">
+                        <div class="testimonial-avatar-placeholder">M&K</div>
+                        <p class="testimonial-quote">"Hosting Kabir's 50th birthday at the Royal Meadows lawns was like
+                            a fairytale. Starlit sky, gourmet street-food counters, and incredible coordination by the
+                            hospitality staff. Thank you, Masala Mantra!"</p>
+                        <h4 class="testimonial-author">Meera & Kabir</h4>
+                        <span class="testimonial-event">50th Birthday Party — Oct 2025</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dots Nav -->
+            <div class="carousel-dots" id="carousel-dots">
+                <span class="dot active" data-slide="0"></span>
+                <span class="dot" data-slide="1"></span>
+                <span class="dot" data-slide="2"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQs Section -->
+    <section id="faq">
+        <div class="section-header">
+            <h2>Frequently Asked Questions</h2>
+            <p>Find quick answers to common queries regarding bookings, catering structures, rules, and services.</p>
+        </div>
+
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-header">
+                    What is the total capacity of Masala Mantra Kamothe Banquet Hall?
+                    <svg class="faq-icon-toggle" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                    </svg>
+                </div>
+                <div class="faq-content">
+                    <p>Masala Mantra accommodates events of various scales. The Imperial Ballroom hosts up to 1,200
+                        guests, while
+                        the Royal Meadows Lawns can host up to 1,500 guests. For boutique gatherings, the Zenith Lounge
+                        is perfect for 80 to 200 guests.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-header">
+                    Do you allow outside catering and decorator agencies?
+                    <svg class="faq-icon-toggle" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                    </svg>
+                </div>
+                <div class="faq-content">
+                    <p>We boast an award-winning in-house team of culinary experts and visual designers. However, to
+                        accommodate specific religious requirements or pre-contracted designers, we do allow outside
+                        caterers and decorators upon payment of a minor royalty surcharge.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-header">
+                    What is the advance booking and cancellation policy?
+                    <svg class="faq-icon-toggle" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                    </svg>
+                </div>
+                <div class="faq-content">
+                    <p>We require a 25% non-refundable advance deposit to confirm and block your date. The remaining 50%
+                        is due 3 months prior to the event, and the final 25% balance must be settled 10 days before the
+                        celebration date.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-header">
+                    Is there an electricity backup facility in case of outages?
+                    <svg class="faq-icon-toggle" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                    </svg>
+                </div>
+                <div class="faq-content">
+                    <p>Yes, we have 100% silent DG power generator backups with automatic transfer switches that trigger
+                        within 3 seconds, ensuring your audio-visual, lighting, and air-conditioning systems operate
+                        uninterrupted.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-header">
+                    Can we book rooms for out-of-town guests?
+                    <svg class="faq-icon-toggle" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                    </svg>
+                </div>
+                <div class="faq-content">
+                    <p>Yes! Masala Mantra features 12 luxurious executive guest suites, including a complimentary grand
+                        bridal
+                        dressing suite equipped with professional studio lighting, lounge sofas, and dedicated security
+                        lockers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Map Section -->
+    <section id="contact" class="section-dark">
+        <div class="section-header">
+            <h2>Connect With Us</h2>
+            <p>Ready to script your fairytale? Reach out to our hospitality consultants or plan a physical walkthrough
+                tour.</p>
+        </div>
+
+        <div class="contact-section-grid">
+            <!-- Details & map -->
+            <div class="contact-info-panel">
+                <div class="contact-details">
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" />
+                            </svg>
+                        </div>
+                        <div class="contact-detail-content">
+                            <h4>Our Address</h4>
+                            <p>Masala Mantra, Plot No. 45, Sector 11, Kamothe, Navi Mumbai, Maharashtra 410206</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M6.62 10.79a15.15 15.15 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.11-.27 11.36 11.36 0 0 0 3.58.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.58 1 1 0 0 1-.27 1.11z" />
+                            </svg>
+                        </div>
+                        <div class="contact-detail-content">
+                            <h4>Phone & Bookings</h4>
+                            <p>Office: +91 22 2345 6789 | Cell: +91 98765 43210</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                            </svg>
+                        </div>
+                        <div class="contact-detail-content">
+                            <h4>Email Enquiries</h4>
+                            <p>events@masalamantra.com | booking@masalamantra.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="map-placeholder">
+                    <div class="map-placeholder-text">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48v15.12c0 .22.14.42.36.48l.16-.02L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.48c0-.22-.14-.42-.36-.48zM15 19l-6-2.11V5l6 2.11V19z" />
+                        </svg>
+                        <h4>Interactive Map Guide</h4>
+                        <p>Click here to view route directions</p>
+                    </div>
+                    <img class="map-placeholder-bg" src="map_background.png" alt="Masala Mantra Map Guide Preview">
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form-panel">
+                <h3>Request a Site Tour</h3>
+                <p>Submit your basic query details. Our dedicated event manager will reach out within 2 hours with
+                    dates.</p>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label for="contact-name">Full Name</label>
+                        <input type="text" id="contact-name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-phone">Mobile Number</label>
+                        <input type="tel" id="contact-phone" placeholder="+91 99999 99999" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email Address</label>
+                        <input type="email" id="contact-email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-message">Additional Requirements</label>
+                        <textarea id="contact-message" rows="4"
+                            placeholder="Mention tentative dates, estimated guest counts, or custom theme requests..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">Submit Inquiry</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <a href="#" class="logo" style="margin-bottom: 20px;">
+                    <svg class="logo-icon" viewBox="0 0 24 24"
+                        style="width: 32px; height: 32px; fill: none; stroke: var(--gold-primary); stroke-width: 1.5;">
+                        <circle cx="12" cy="12" r="10" stroke="var(--gold-primary)" />
+                        <circle cx="12" cy="12" r="8" stroke="var(--gold-primary)" stroke-dasharray="1 1" />
+                        <path d="M8.5 7.5a1.5 2 0 0 1 0 3v4.5" stroke="currentColor" stroke-linecap="round" />
+                        <path d="M12 7v8" stroke="currentColor" stroke-linecap="round" />
+                        <path d="M15 7v4c0 .5.3.8.7.8V15" stroke="currentColor" stroke-linecap="round" />
+                    </svg>
+                    <span class="logo-text" style="font-size: 1.25rem;">Masala Mantra</span>
+                </a>
+                <p>Creating lifetime milestones through luxurious settings, state-of-the-art infrastructure, and curated
+                    dining experiences since 2012.</p>
+                <div class="social-links">
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01" />
+                        </svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul class="footer-links">
+                    <li><a href="#features">Venues & Suites</a></li>
+                    <li><a href="#gallery">Real Celebrations</a></li>
+                    <li><a href="#estimator">Interactive Estimator</a></li>
+                    <li><a href="#testimonials">Guest Stories</a></li>
+                    <li><a href="#faq">Venue FAQs</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Services</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Gastronomy Catering</a></li>
+                    <li><a href="#">Cinematography</a></li>
+                    <li><a href="#">Vocalists & DJ Stage</a></li>
+                    <li><a href="#">Thematic Flower Art</a></li>
+                    <li><a href="#">Bridal Suite Escort</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Working Hours</h4>
+                <p>Site Walkthrough: Daily 10:00 AM - 7:30 PM (Prior Registration Recommended)</p>
+                <p>Events: 24 Hours Facility Operations</p>
+                <p>Office: Mon - Sat 9:30 AM - 6:00 PM</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masala Mantra Kamothe. All Rights Reserved. Designed with luxury standards.</p>
+            <p><a href="#" style="color: var(--text-muted-light); text-decoration: none;">Privacy Policy</a> | <a
+                    href="#" style="color: var(--text-muted-light); text-decoration: none;">Terms of Use</a></p>
+        </div>
+    </footer>
+
+    <!-- Interactive Multi-Step Booking Modal -->
+    <div class="modal-overlay" id="booking-modal">
+        <div class="modal-content">
+            <button class="close-modal-btn" id="close-modal-btn">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+            </button>
+
+            <div id="booking-modal-body">
+                <!-- Form steps indicator -->
+                <div class="steps-indicator">
+                    <span class="step-dot active" data-step="1">1</span>
+                    <span class="step-dot" data-step="2">2</span>
+                    <span class="step-dot" data-step="3">3</span>
+                </div>
+
+                <form id="booking-form">
+                    <!-- Step 1: Booking Logistics -->
+                    <div class="form-step active" id="step-1">
+                        <h3>Reserve Celebration Space</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="booking-date">Celebration Date</label>
+                                <input type="date" id="booking-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="booking-session">Time Session</label>
+                                <select id="booking-session">
+                                    <option value="morning">Morning (9 AM - 4 PM)</option>
+                                    <option value="evening" selected>Evening (6 PM - Midnight)</option>
+                                    <option value="fullday">Full Day Reservation</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking-theme">Aesthetic Visual Theme</label>
+                            <select id="booking-theme">
+                                <option value="gold-royal">Royal Imperial Gold & White Roses</option>
+                                <option value="emerald-forest">Emerald Rustic Forest Garden</option>
+                                <option value="modern-minimal">Minimalist Crystal Glass Elegance</option>
+                                <option value="boho-sunset">Bohemian Sunset Glow Pastel</option>
+                            </select>
+                        </div>
+
+                        <div class="step-buttons">
+                            <div></div>
+                            <button type="button" class="btn-primary" id="btn-next-1">Next Step</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Customer Contact info -->
+                    <div class="form-step" id="step-2">
+                        <h3>Contact Details</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="booking-name">Full Name</label>
+                                <input type="text" id="booking-name" placeholder="John Doe" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="booking-phone">Mobile Number</label>
+                                <input type="tel" id="booking-phone" placeholder="+91 99999 99999" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking-email">Email Address</label>
+                            <input type="email" id="booking-email" placeholder="john@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking-notes">Special Dietary or Seating Notes</label>
+                            <textarea id="booking-notes" rows="3"
+                                placeholder="Provide extra requirements like wheelchair ramp access, vegan food allergies, kids play zone etc..."></textarea>
+                        </div>
+
+                        <div class="step-buttons">
+                            <button type="button" class="btn-outline" id="btn-prev-2">Previous</button>
+                            <button type="submit" class="btn-primary" id="btn-submit-booking">Confirm Inquiry Details</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
