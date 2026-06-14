@@ -6,6 +6,11 @@ import urllib.parse
 import sys
 import datetime
 
+# Ensure the server runs in the script's directory so it can resolve index.html and assets
+script_dir = os.path.dirname(os.path.abspath(__file__))
+if script_dir:
+    os.chdir(script_dir)
+
 # 1. Automated Dependency Handler: Resolve pymysql driver
 try:
     import pymysql
@@ -107,9 +112,9 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        # Reroute root to banquet.html
+        # Reroute root to index.html
         if self.path == '/' or self.path == '/index.html':
-            self.path = '/banquet.html'
+            self.path = '/index.html'
             return super().do_GET()
 
         parsed_path = urllib.parse.urlparse(self.path)
