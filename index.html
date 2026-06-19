@@ -178,70 +178,16 @@
             <button class="filter-btn" data-filter="terrace">Terrace Deck</button>
         </div>
 
-        <div class="showcase-grid">
-            <div class="showcase-item" data-category="wedding">
-                <img class="showcase-img" src="real_stage.jpg" alt="Masala Mantra Grand Wedding Setup">
-                <div class="showcase-overlay">
-                    <span class="showcase-tag">Banquet Hall</span>
-                    <h3>The Grand Banquet Hall</h3>
-                    <p>Bespoke elegant setup featuring clean, air-conditioned layouts and luxury decor panels.</p>
-                    <div class="showcase-capacity">
-                        <svg viewBox="0 0 24 24">
-                            <path
-                                d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm11 11v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
-                        </svg>
-                        Capacity: 150 - 400 Guests
-                    </div>
-                </div>
-            </div>
-
-            <div class="showcase-item" data-category="community">
-                <img class="showcase-img" src="real_entrance.png" alt="Pre-wedding setup">
-                <div class="showcase-overlay">
-                    <span class="showcase-tag">Community Hall</span>
-                    <h3>The Community Hall</h3>
-                    <p>Spacious, welcoming hall ideal for Sangeet, Haldi, Mehendi, and family gatherings.</p>
-                    <div class="showcase-capacity">
-                        <svg viewBox="0 0 24 24">
-                            <path
-                                d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm11 11v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
-                        </svg>
-                        Capacity: 80 - 200 Guests
-                    </div>
-                </div>
-            </div>
-
-            <div class="showcase-item" data-category="dining">
-                <img class="showcase-img" src="real_dining.jpg" alt="Mughlai Dining Area">
-                <div class="showcase-overlay">
-                    <span class="showcase-tag">Dining & Lounge</span>
-                    <h3>Mughlai Dining Lounge</h3>
-                    <p>Indulge in premium in-house catering layouts serving authentic North Indian and Mughlai buffet
-                        tiers.</p>
-                    <div class="showcase-capacity">
-                        <svg viewBox="0 0 24 24">
-                            <path
-                                d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm11 11v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
-                        </svg>
-                        Capacity: 40 - 120 Guests
-                    </div>
-                </div>
-            </div>
-
-            <div class="showcase-item" data-category="terrace">
-                <img class="showcase-img" src="real_buffet.png" alt="Open-Air Terrace">
-                <div class="showcase-overlay">
-                    <span class="showcase-tag">Terrace Deck</span>
-                    <h3>Open-Air Terrace Deck</h3>
-                    <p>Cozy open-sky terrace optimized for evening birthday parties and cocktail tables under stars.</p>
-                    <div class="showcase-capacity">
-                        <svg viewBox="0 0 24 24">
-                            <path
-                                d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm11 11v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
-                        </svg>
-                        Capacity: 50 - 150 Guests
-                    </div>
-                </div>
+        <div class="showcase-grid" id="showcase-grid">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted-light); font-size: 1.1rem;">
+                <div class="spinner" style="border: 3px solid rgba(212, 175, 55, 0.1); border-radius: 50%; border-top: 3px solid var(--gold-primary); width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                Loading our exquisite setups...
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
             </div>
         </div>
     </section>

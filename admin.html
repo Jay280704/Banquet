@@ -350,6 +350,263 @@
             color: #bbb;
             cursor: help;
         }
+
+        /* Tabs navigation styling */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 2px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #888;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab-btn.active {
+            color: var(--gold-primary, #d4af37);
+            border-bottom-color: var(--gold-primary, #d4af37);
+            background: rgba(212, 175, 55, 0.04);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInTab 0.4s ease forwards;
+        }
+
+        @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Showcase manager styles */
+        .showcase-manager-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .showcase-manager-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-card, .settings-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .upload-card h3, .settings-card h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-primary, #d4af37);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group-admin {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group-admin label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: #aaa;
+        }
+
+        .form-group-admin input[type="text"],
+        .form-group-admin input[type="number"],
+        .form-group-admin select,
+        .form-group-admin textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 8px;
+            padding: 12px;
+            color: #ffffff;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group-admin select option {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .form-group-admin input:focus,
+        .form-group-admin select:focus,
+        .form-group-admin textarea:focus {
+            border-color: var(--gold-primary, #d4af37);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .image-preview-box {
+            width: 100%;
+            height: 180px;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            transition: border-color 0.3s;
+        }
+
+        .image-preview-box:hover {
+            border-color: var(--gold-primary, #d4af37);
+        }
+
+        .image-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-placeholder {
+            text-align: center;
+            color: #888;
+        }
+
+        .image-preview-placeholder svg {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
+            stroke: currentColor;
+        }
+
+        /* Photos management listing grid */
+        .admin-photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-height: 550px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .admin-photo-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .admin-photo-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .admin-photo-img-wrapper {
+            width: 100%;
+            height: 120px;
+            position: relative;
+        }
+
+        .admin-photo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .admin-photo-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--gold-primary, #d4af37);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .admin-photo-details {
+            padding: 12px;
+        }
+
+        .admin-photo-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 0 0 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .admin-photo-capacity {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .btn-photo-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(217, 83, 79, 0.9);
+            border: none;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn-photo-delete:hover {
+            background: #d9534f;
+            transform: scale(1.1);
+        }
+
+        .btn-photo-delete svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
     </style>
 </head>
 <body>
@@ -410,67 +667,183 @@
             <button class="btn-logout" id="btn-logout">Lock Panel</button>
         </header>
 
-        <!-- Stats Counter Cards -->
-        <section class="metrics-grid">
-            <div class="metric-card">
-                <h3>Total Submissions</h3>
-                <p class="value" id="stat-total">0</p>
-            </div>
-            <div class="metric-card">
-                <h3>Revenue Potential</h3>
-                <p class="value gold-value" id="stat-revenue">₹0</p>
-            </div>
-            <div class="metric-card">
-                <h3>Pending Actions</h3>
-                <p class="value" id="stat-pending" style="color: #ff9800;">0</p>
-            </div>
-            <div class="metric-card">
-                <h3>Confirmed Bookings</h3>
-                <p class="value" id="stat-confirmed" style="color: #4caf50;">0</p>
-            </div>
-        </section>
+        <!-- Tabs navigation bar -->
+        <nav class="admin-tabs">
+            <button class="tab-btn active" data-tab="inquiries-tab">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right:8px; display: inline-block; vertical-align: middle;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2zm0 8H7v-2h10v2z"/></svg>
+                Manage Inquiries
+            </button>
+            <button class="tab-btn" data-tab="showcase-tab">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right:8px; display: inline-block; vertical-align: middle;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                Showcase Photos
+            </button>
+            <button class="tab-btn" data-tab="settings-tab">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right:8px; display: inline-block; vertical-align: middle;"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                Security Settings
+            </button>
+        </nav>
 
-        <!-- Filters and Searching -->
-        <section class="controls-panel">
-            <input type="text" id="search-filter" placeholder="Search by name, phone, email, reference code...">
-            
-            <select id="type-filter">
-                <option value="all">All Inquiries</option>
-                <option value="booking">Calculator Bookings</option>
-                <option value="contact">Site Tour Inquiries</option>
-            </select>
+        <!-- Tab 1: Inquiries content wrapper -->
+        <div id="inquiries-tab" class="tab-content active">
+            <!-- Stats Counter Cards -->
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Total Submissions</h3>
+                    <p class="value" id="stat-total">0</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Revenue Potential</h3>
+                    <p class="value gold-value" id="stat-revenue">₹0</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Pending Actions</h3>
+                    <p class="value" id="stat-pending" style="color: #ff9800;">0</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Confirmed Bookings</h3>
+                    <p class="value" id="stat-confirmed" style="color: #4caf50;">0</p>
+                </div>
+            </section>
 
-            <select id="status-filter">
-                <option value="all">All Statuses</option>
-                <option value="Pending">Pending</option>
-                <option value="Contacted">Contacted</option>
-                <option value="Confirmed">Confirmed</option>
-                <option value="Cancelled">Cancelled</option>
-            </select>
-        </section>
+            <!-- Filters and Searching -->
+            <section class="controls-panel">
+                <input type="text" id="search-filter" placeholder="Search by name, phone, email, reference code...">
+                
+                <select id="type-filter">
+                    <option value="all">All Inquiries</option>
+                    <option value="booking">Calculator Bookings</option>
+                    <option value="contact">Site Tour Inquiries</option>
+                </select>
 
-        <!-- Data Table Container -->
-        <section class="table-container">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Date & Reference</th>
-                        <th>Client Details</th>
-                        <th>Event Specifications</th>
-                        <th>Estimated Cost</th>
-                        <th>Status</th>
-                        <th>Manage</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <!-- Dynamic rows inserted here -->
-                </tbody>
-            </table>
-            <div id="table-empty" class="empty-state" style="display: none;">
-                No inquiries or bookings match the active filters.
+                <select id="status-filter">
+                    <option value="all">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Contacted">Contacted</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </section>
+
+            <!-- Data Table Container -->
+            <section class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Date & Reference</th>
+                            <th>Client Details</th>
+                            <th>Event Specifications</th>
+                            <th>Estimated Cost</th>
+                            <th>Status</th>
+                            <th>Manage</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Dynamic rows inserted here -->
+                    </tbody>
+                </table>
+                <div id="table-empty" class="empty-state" style="display: none;">
+                    No inquiries or bookings match the active filters.
+                </div>
+            </section>
+        </div>
+
+        <!-- Tab 2: Showcase Photos content wrapper -->
+        <div id="showcase-tab" class="tab-content">
+            <div class="showcase-manager-grid">
+                <!-- Left side: Upload Form -->
+                <div class="upload-card">
+                    <h3>Upload Showcase Photo</h3>
+                    <form id="upload-photo-form" enctype="multipart/form-data">
+                        <div class="form-group-admin">
+                            <label>Select Photo</label>
+                            <div class="image-preview-box" id="image-picker-box">
+                                <div class="image-preview-placeholder" id="preview-placeholder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 40px; height: 40px; margin: 0 auto 8px; display: block;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                    <div>Click to upload image</div>
+                                    <div style="font-size:0.75rem; margin-top:4px;">JPG, PNG, WEBP (Max 5MB)</div>
+                                </div>
+                                <img id="image-preview" src="" style="display:none; max-width:100%; max-height:100%; object-fit:cover;">
+                            </div>
+                            <input type="file" id="photo-file" accept="image/*" style="display:none;" required>
+                        </div>
+
+                        <div class="form-group-admin">
+                            <label for="photo-title">Title / Setup Name</label>
+                            <input type="text" id="photo-title" placeholder="e.g. Royal Stage Setup" required>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group-admin">
+                                <label for="photo-category">Hall Category</label>
+                                <select id="photo-category" required>
+                                    <option value="wedding">Banquet Hall</option>
+                                    <option value="community">Community Hall</option>
+                                    <option value="dining">Dining & Lounge</option>
+                                    <option value="terrace">Terrace Deck</option>
+                                </select>
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="photo-capacity">Guest Capacity</label>
+                                <input type="text" id="photo-capacity" placeholder="e.g. 150 - 400 Guests">
+                            </div>
+                        </div>
+
+                        <div class="form-group-admin">
+                            <label for="photo-desc">Description</label>
+                            <textarea id="photo-desc" rows="3" placeholder="Enter setup details, visuals, decor styles..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-login" id="btn-upload-photo">Upload Image</button>
+                    </form>
+                </div>
+
+                <!-- Right side: Existing Showcase Photos List -->
+                <div class="upload-card">
+                    <h3>Current Showcase Gallery</h3>
+                    <div class="admin-photos-grid" id="admin-photos-list">
+                        <!-- Photos will be inserted dynamically here -->
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
+
+        <!-- Tab 3: Security Settings content wrapper -->
+        <div id="settings-tab" class="tab-content">
+            <div style="max-width: 550px; margin: 0 auto;">
+                <div class="settings-card">
+                    <h3>Update Admin Credentials</h3>
+                    <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 25px;">You can change your password and security question used for forgot password recoveries.</p>
+                    <form id="change-credentials-form">
+                        <div class="form-group-admin">
+                            <label for="curr-password">Current Password</label>
+                            <input type="password" id="curr-password" placeholder="Enter Current Password" required autocomplete="current-password">
+                        </div>
+                        
+                        <div class="form-group-admin">
+                            <label for="new-pass">New Password</label>
+                            <input type="password" id="new-pass" placeholder="Enter New Password" required autocomplete="new-password">
+                        </div>
+
+                        <div class="form-group-admin">
+                            <label for="new-question">New Security Question</label>
+                            <input type="text" id="new-question" placeholder="e.g. What is your pet's name?" required>
+                        </div>
+
+                        <div class="form-group-admin">
+                            <label for="new-answer">New Security Answer</label>
+                            <input type="text" id="new-answer" placeholder="Enter answer (case-insensitive)" required>
+                        </div>
+
+                        <button type="submit" class="btn-login" id="btn-save-credentials">Save Changes</button>
+                        <div class="error-msg" id="settings-error-msg" style="margin-top:15px;"></div>
+                        <div style="color: #4caf50; font-size: 0.9rem; margin-top: 15px; display: none; text-align: center;" id="settings-success-msg">
+                            Credentials updated successfully!
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -661,6 +1034,7 @@
                 
                 // Render Page
                 renderDashboard();
+                fetchAdminPhotos();
             })
             .catch(err => {
                 console.error(err);
@@ -931,6 +1305,260 @@
         document.getElementById('search-filter').addEventListener('input', renderDashboard);
         document.getElementById('type-filter').addEventListener('change', renderDashboard);
         document.getElementById('status-filter').addEventListener('change', renderDashboard);
+
+        // Tab switching logic
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetTab = btn.getAttribute('data-tab');
+                
+                // Set active buttons
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Set active tab contents
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(targetTab).classList.add('active');
+                
+                // Refresh dynamic components when tabs change
+                if (targetTab === 'showcase-tab') {
+                    fetchAdminPhotos();
+                }
+            });
+        });
+
+        // Trigger file picker
+        const imagePickerBox = document.getElementById('image-picker-box');
+        const photoFileInput = document.getElementById('photo-file');
+        const imagePreview = document.getElementById('image-preview');
+        const previewPlaceholder = document.getElementById('preview-placeholder');
+
+        if (imagePickerBox) {
+            imagePickerBox.addEventListener('click', () => {
+                photoFileInput.click();
+            });
+        }
+
+        if (photoFileInput) {
+            photoFileInput.addEventListener('change', () => {
+                const file = photoFileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        previewPlaceholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Fetch showcase photos for admin grid
+        function fetchAdminPhotos() {
+            const grid = document.getElementById('admin-photos-list');
+            if (!grid) return;
+            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px; color:#888;">Loading gallery...</div>';
+            
+            fetch('/api/photos')
+                .then(res => res.json())
+                .then(photos => {
+                    grid.innerHTML = '';
+                    
+                    const categoryNames = {
+                        wedding: 'Banquet Hall',
+                        community: 'Community Hall',
+                        dining: 'Dining & Lounge',
+                        terrace: 'Terrace Deck'
+                    };
+                    
+                    if (photos.length === 0) {
+                        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px; color:#888;">No showcase photos uploaded.</div>';
+                        return;
+                    }
+                    
+                    photos.forEach(photo => {
+                        const card = document.createElement('div');
+                        card.className = 'admin-photo-card';
+                        
+                        card.innerHTML = `
+                            <div class="admin-photo-img-wrapper">
+                                <img class="admin-photo-img" src="${photo.image_path}" alt="${photo.title}">
+                                <span class="admin-photo-badge">${categoryNames[photo.category] || 'Showcase'}</span>
+                                <button class="btn-photo-delete" data-id="${photo.id}" title="Delete Photo">
+                                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                </button>
+                            </div>
+                            <div class="admin-photo-details">
+                                <div class="admin-photo-title" title="${photo.title}">${photo.title}</div>
+                                <div class="admin-photo-capacity">${photo.capacity || 'No Capacity Details'}</div>
+                            </div>
+                        `;
+                        
+                        // Bind delete click
+                        card.querySelector('.btn-photo-delete').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            deletePhoto(photo.id);
+                        });
+                        
+                        grid.appendChild(card);
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px; color:#ff4d4d;">Failed to load photos.</div>';
+                });
+        }
+
+        // Delete photo API call
+        function deletePhoto(id) {
+            if (confirm('Are you sure you want to permanently delete this photo from the showcase?')) {
+                fetch('/api/admin/photos/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Passcode': activePasscode
+                    },
+                    body: JSON.stringify({ id })
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Deletion failed');
+                    return res.json();
+                })
+                .then(data => {
+                    fetchAdminPhotos();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error deleting showcase photo.');
+                });
+            }
+        }
+
+        // Submit Upload photo form
+        const uploadPhotoForm = document.getElementById('upload-photo-form');
+        if (uploadPhotoForm) {
+            uploadPhotoForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const file = photoFileInput.files[0];
+                if (!file) {
+                    alert('Please select an image file first.');
+                    return;
+                }
+                
+                const title = document.getElementById('photo-title').value;
+                const category = document.getElementById('photo-category').value;
+                const capacity = document.getElementById('photo-capacity').value;
+                const description = document.getElementById('photo-desc').value;
+                
+                const submitBtn = document.getElementById('btn-upload-photo');
+                const origText = submitBtn.innerText;
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Uploading photo...';
+                
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('title', title);
+                formData.append('category', category);
+                formData.append('capacity', capacity);
+                formData.append('description', description);
+                
+                fetch('/api/admin/photos/upload', {
+                    method: 'POST',
+                    headers: {
+                        'X-Admin-Passcode': activePasscode
+                    },
+                    body: formData
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(data => {
+                            throw new Error(data.error || 'Upload failed');
+                        });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    alert('Showcase photo uploaded successfully!');
+                    
+                    // Reset form & preview
+                    uploadPhotoForm.reset();
+                    imagePreview.src = '';
+                    imagePreview.style.display = 'none';
+                    previewPlaceholder.style.display = 'block';
+                    
+                    // Refresh list
+                    fetchAdminPhotos();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert(err.message || 'Error uploading showcase photo.');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = origText;
+                });
+            });
+        }
+
+        // Submit Change credentials form
+        const changeCredForm = document.getElementById('change-credentials-form');
+        if (changeCredForm) {
+            changeCredForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const currPassword = document.getElementById('curr-password').value;
+                const newPassword = document.getElementById('new-pass').value;
+                const newQuestion = document.getElementById('new-question').value;
+                const newAnswer = document.getElementById('new-answer').value;
+                
+                const errorDiv = document.getElementById('settings-error-msg');
+                const successDiv = document.getElementById('settings-success-msg');
+                
+                errorDiv.style.display = 'none';
+                successDiv.style.display = 'none';
+                
+                const submitBtn = document.getElementById('btn-save-credentials');
+                const origText = submitBtn.innerText;
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Saving changes...';
+                
+                fetch('/api/admin/change-credentials', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Passcode': activePasscode
+                    },
+                    body: JSON.stringify({
+                        current_password: currPassword,
+                        new_password: newPassword,
+                        new_question: newQuestion,
+                        new_answer: newAnswer
+                    })
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(data => {
+                            throw new Error(data.error || 'Update failed');
+                        });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    successDiv.style.display = 'block';
+                    changeCredForm.reset();
+                })
+                .catch(err => {
+                    console.error(err);
+                    errorDiv.textContent = err.message || 'Error updating credentials.';
+                    errorDiv.style.display = 'block';
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = origText;
+                });
+            });
+        }
     </script>
 </body>
 </html>

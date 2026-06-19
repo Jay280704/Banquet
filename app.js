@@ -53,38 +53,98 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-    // 3. SHOWCASE GALLERY FILTER
+    // 3. DYNAMIC SHOWCASE GALLERY & FILTER
     // ==========================================
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const showcaseItems = document.querySelectorAll('.showcase-item');
-
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active class from buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            const filterValue = button.getAttribute('data-filter');
-
-            showcaseItems.forEach(item => {
-                const category = item.getAttribute('data-category');
+    const gridContainer = document.getElementById('showcase-grid');
+    if (gridContainer) {
+        fetch('/api/photos')
+            .then(res => res.json())
+            .then(photos => {
+                gridContainer.innerHTML = '';
                 
-                if (filterValue === 'all' || category === filterValue) {
-                    item.style.display = 'block';
-                    setTimeout(() => {
-                        item.style.opacity = '1';
-                        item.style.transform = 'scale(1)';
-                    }, 50);
-                } else {
-                    item.style.opacity = '0';
-                    item.style.transform = 'scale(0.85)';
-                    setTimeout(() => {
-                        item.style.display = 'none';
-                    }, 400); // match CSS transition duration
+                const categoryTags = {
+                    wedding: 'Banquet Hall',
+                    community: 'Community Hall',
+                    dining: 'Dining & Lounge',
+                    terrace: 'Terrace Deck'
+                };
+                
+                if (photos.length === 0) {
+                    gridContainer.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted-light); font-size: 1.1rem;">
+                            No showcase photos available yet. Check back soon!
+                        </div>`;
+                    return;
                 }
+                
+                photos.forEach(photo => {
+                    const item = document.createElement('div');
+                    item.className = 'showcase-item';
+                    item.setAttribute('data-category', photo.category);
+                    
+                    item.innerHTML = `
+                        <img class="showcase-img" src="${photo.image_path}" alt="${photo.title}">
+                        <div class="showcase-overlay">
+                            <span class="showcase-tag">${categoryTags[photo.category] || 'Showcase'}</span>
+                            <h3>${photo.title}</h3>
+                            <p>${photo.description || ''}</p>
+                            ${photo.capacity ? `
+                            <div class="showcase-capacity">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm11 11v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                Capacity: ${photo.capacity}
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    gridContainer.appendChild(item);
+                });
+                
+                // Initialize gallery filtering logic
+                initializeFilterLogic();
+            })
+            .catch(err => {
+                console.error('Error fetching showcase photos:', err);
+                gridContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted-light); font-size: 1.1rem;">
+                        Could not load the showcase gallery. Please refresh or try again.
+                    </div>`;
+            });
+    }
+
+    function initializeFilterLogic() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const showcaseItems = document.querySelectorAll('.showcase-item');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                const filterValue = button.getAttribute('data-filter');
+
+                showcaseItems.forEach(item => {
+                    const category = item.getAttribute('data-category');
+                    
+                    if (filterValue === 'all' || category === filterValue) {
+                        item.style.display = 'block';
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'scale(1)';
+                        }, 50);
+                    } else {
+                        item.style.opacity = '0';
+                        item.style.transform = 'scale(0.85)';
+                        setTimeout(() => {
+                            item.style.display = 'none';
+                        }, 400);
+                    }
+                });
             });
         });
-    });
+    }
 
     // ==========================================
     // 4. INTERACTIVE BUDGET ESTIMATOR

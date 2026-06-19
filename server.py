@@ -93,6 +93,17 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS showcase_photos (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                image_path VARCHAR(255) NOT NULL,
+                category VARCHAR(50) NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                capacity VARCHAR(100),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
         
         # Seed default admin if empty
         c.execute("SELECT COUNT(*) FROM admin_users")
@@ -108,6 +119,23 @@ def init_db():
                 VALUES (%s, %s, %s, %s)
             ''', ('admin', default_pass_hash, 'What is the name of this banquet hall?', default_ans_hash))
             print("Default admin user ('admin') seeded successfully.")
+
+        # Seed default showcase photos if empty
+        c.execute("SELECT COUNT(*) FROM showcase_photos")
+        photo_count = c.fetchone()[0]
+        if photo_count == 0:
+            default_photos = [
+                ('real_stage.jpg', 'wedding', 'The Grand Banquet Hall', 'Bespoke elegant setup featuring clean, air-conditioned layouts and luxury decor panels.', '150 - 400 Guests'),
+                ('real_entrance.png', 'community', 'The Community Hall', 'Spacious, welcoming hall ideal for Sangeet, Haldi, Mehendi, and family gatherings.', '80 - 200 Guests'),
+                ('real_dining.jpg', 'dining', 'Mughlai Dining Lounge', 'Indulge in premium in-house catering layouts serving authentic North Indian and Mughlai buffet tiers.', '40 - 120 Guests'),
+                ('real_buffet.png', 'terrace', 'Open-Air Terrace Deck', 'Cozy open-sky terrace optimized for evening birthday parties and cocktail tables under stars.', '50 - 150 Guests')
+            ]
+            for image_path, category, title, description, capacity in default_photos:
+                c.execute('''
+                    INSERT INTO showcase_photos (image_path, category, title, description, capacity)
+                    VALUES (%s, %s, %s, %s, %s)
+                ''', (image_path, category, title, description, capacity))
+            print("Default showcase photos seeded successfully.")
             
         conn.commit()
         conn.close()
@@ -122,6 +150,60 @@ class DateTimeEncoder(json.JSONEncoder):
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat()
         return super().default(obj)
+
+def parse_multipart(content_type, body_bytes):
+    """
+    Parses multipart/form-data request body manually without external dependencies.
+    Returns: (fields_dict, files_dict)
+      fields_dict: name -> string value
+      files_dict: name -> { 'filename': str, 'content_type': str, 'content': bytes }
+    """
+    import re
+    fields = {}
+    files = {}
+    
+    # Extract boundary
+    boundary_match = re.search(r'boundary=([^;]+)', content_type)
+    if not boundary_match:
+        return fields, files
+    boundary = b'--' + boundary_match.group(1).strip().encode('utf-8')
+    
+    # Split by boundary
+    parts = body_bytes.split(boundary)
+    for part in parts:
+        if not part or part == b'\r\n' or part == b'--\r\n' or part.startswith(b'--'):
+            continue
+        
+        if b'\r\n\r\n' not in part:
+            continue
+        
+        headers_part, content = part.split(b'\r\n\r\n', 1)
+        
+        if headers_part.startswith(b'\r\n'):
+            headers_part = headers_part[2:]
+        if content.endswith(b'\r\n'):
+            content = content[:-2]
+            
+        headers_str = headers_part.decode('utf-8', errors='ignore')
+        
+        name_match = re.search(r'name="([^"]+)"', headers_str)
+        filename_match = re.search(r'filename="([^"]+)"', headers_str)
+        content_type_match = re.search(r'Content-Type:\s*([^\r\n]+)', headers_str, re.IGNORECASE)
+        
+        if name_match:
+            name = name_match.group(1)
+            if filename_match:
+                filename = filename_match.group(1)
+                ct = content_type_match.group(1) if content_type_match else 'application/octet-stream'
+                files[name] = {
+                    'filename': filename,
+                    'content_type': ct,
+                    'content': content
+                }
+            else:
+                fields[name] = content.decode('utf-8', errors='ignore')
+                
+    return fields, files
 
 class ThreadedHTTPServer(socketserver.ThreadingTCPServer):
     allow_reuse_address = True
@@ -164,6 +246,27 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                 )
                 c = conn.cursor()
                 c.execute('SELECT * FROM inquiries ORDER BY created_at DESC')
+                rows = c.fetchall()
+                conn.close()
+
+                self.send_json_response(rows)
+            except Exception as e:
+                self.send_json_response({"error": str(e)}, 500)
+            return
+
+        # API Route: Fetch all showcase photos
+        elif parsed_path.path == '/api/photos':
+            try:
+                conn = pymysql.connect(
+                    host=MYSQL_HOST,
+                    port=MYSQL_PORT,
+                    user=MYSQL_USER,
+                    password=MYSQL_PASSWORD,
+                    database=MYSQL_DB,
+                    cursorclass=pymysql.cursors.DictCursor
+                )
+                c = conn.cursor()
+                c.execute('SELECT * FROM showcase_photos ORDER BY created_at DESC')
                 rows = c.fetchall()
                 conn.close()
 
@@ -428,6 +531,180 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     conn.close()
                     self.send_json_response({"success": False, "error": "Incorrect answer to security question"}, 400)
+            except Exception as e:
+                self.send_json_response({"success": False, "error": str(e)}, 500)
+            return
+
+        # API Route: Upload Showcase Photo
+        elif parsed_path.path == '/api/admin/photos/upload':
+            passcode = self.headers.get('X-Admin-Passcode')
+            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
+                self.send_json_response({"error": "Unauthorized"}, 401)
+                return
+
+            try:
+                content_type = self.headers.get('Content-Type')
+                content_length = int(self.headers.get('Content-Length', 0))
+                body_bytes = self.rfile.read(content_length)
+
+                fields, files = parse_multipart(content_type, body_bytes)
+
+                category = fields.get('category')
+                title = fields.get('title')
+                description = fields.get('description', '')
+                capacity = fields.get('capacity', '')
+                image_file = files.get('image')
+
+                if not category or not title or not image_file:
+                    self.send_json_response({"success": False, "error": "Category, Title, and Image are required"}, 400)
+                    return
+
+                # Save file
+                import uuid
+                filename = image_file['filename']
+                ext = os.path.splitext(filename)[1]
+                if not ext:
+                    ext = '.jpg'
+                unique_filename = f"{uuid.uuid4().hex}{ext}"
+                
+                upload_dir = os.path.join(script_dir, 'uploads')
+                os.makedirs(upload_dir, exist_ok=True)
+                
+                filepath = os.path.join(upload_dir, unique_filename)
+                with open(filepath, 'wb') as f:
+                    f.write(image_file['content'])
+
+                image_path = f"uploads/{unique_filename}"
+
+                # Insert database record
+                conn = pymysql.connect(
+                    host=MYSQL_HOST,
+                    port=MYSQL_PORT,
+                    user=MYSQL_USER,
+                    password=MYSQL_PASSWORD,
+                    database=MYSQL_DB
+                )
+                c = conn.cursor()
+                c.execute('''
+                    INSERT INTO showcase_photos (image_path, category, title, description, capacity)
+                    VALUES (%s, %s, %s, %s, %s)
+                ''', (image_path, category, title, description, capacity))
+                conn.commit()
+                conn.close()
+
+                self.send_json_response({"success": True, "message": "Photo uploaded successfully", "image_path": image_path})
+            except Exception as e:
+                self.send_json_response({"success": False, "error": str(e)}, 500)
+            return
+
+        # API Route: Delete Showcase Photo
+        elif parsed_path.path == '/api/admin/photos/delete':
+            passcode = self.headers.get('X-Admin-Passcode')
+            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
+                self.send_json_response({"error": "Unauthorized"}, 401)
+                return
+
+            try:
+                data = self.read_json_body()
+                photo_id = data.get('id')
+
+                if not photo_id:
+                    self.send_json_response({"error": "Photo ID is required"}, 400)
+                    return
+
+                conn = pymysql.connect(
+                    host=MYSQL_HOST,
+                    port=MYSQL_PORT,
+                    user=MYSQL_USER,
+                    password=MYSQL_PASSWORD,
+                    database=MYSQL_DB,
+                    cursorclass=pymysql.cursors.DictCursor
+                )
+                c = conn.cursor()
+                # Fetch filepath to delete from disk
+                c.execute('SELECT image_path FROM showcase_photos WHERE id = %s', (photo_id,))
+                photo = c.fetchone()
+
+                if photo:
+                    # Delete database record
+                    c.execute('DELETE FROM showcase_photos WHERE id = %s', (photo_id,))
+                    conn.commit()
+                    conn.close()
+
+                    # Delete from file system if it's in uploads directory
+                    image_path = photo['image_path']
+                    if image_path.startswith('uploads/'):
+                        full_path = os.path.join(script_dir, image_path)
+                        if os.path.exists(full_path):
+                            try:
+                                os.remove(full_path)
+                            except Exception as fs_err:
+                                print(f"Error removing physical photo file: {fs_err}")
+                    
+                    self.send_json_response({"success": True, "message": "Photo successfully deleted!"})
+                else:
+                    conn.close()
+                    self.send_json_response({"error": "Photo not found"}, 404)
+            except Exception as e:
+                self.send_json_response({"error": str(e)}, 500)
+            return
+
+        # API Route: Change Admin Credentials
+        elif parsed_path.path == '/api/admin/change-credentials':
+            passcode = self.headers.get('X-Admin-Passcode')
+            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
+                self.send_json_response({"error": "Unauthorized"}, 401)
+                return
+
+            username = ACTIVE_SESSIONS.get(passcode)
+            if not username:
+                username = 'admin'
+
+            try:
+                import hashlib
+                data = self.read_json_body()
+                current_password = data.get('current_password')
+                new_password = data.get('new_password')
+                new_question = data.get('new_question')
+                new_answer = data.get('new_answer')
+
+                if not current_password or not new_password or not new_question or not new_answer:
+                    self.send_json_response({"success": False, "error": "All fields are required"}, 400)
+                    return
+
+                current_password_hash = hashlib.sha256(current_password.encode('utf-8')).hexdigest()
+
+                conn = pymysql.connect(
+                    host=MYSQL_HOST,
+                    port=MYSQL_PORT,
+                    user=MYSQL_USER,
+                    password=MYSQL_PASSWORD,
+                    database=MYSQL_DB,
+                    cursorclass=pymysql.cursors.DictCursor
+                )
+                c = conn.cursor()
+                # Verify current password
+                c.execute('SELECT password_hash FROM admin_users WHERE username = %s', (username,))
+                user = c.fetchone()
+
+                if not user or user['password_hash'] != current_password_hash:
+                    conn.close()
+                    self.send_json_response({"success": False, "error": "Incorrect current password"}, 400)
+                    return
+
+                # Update password, question, and answer
+                new_password_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
+                new_answer_hash = hashlib.sha256(new_answer.lower().strip().encode('utf-8')).hexdigest()
+
+                c.execute('''
+                    UPDATE admin_users 
+                    SET password_hash = %s, security_question = %s, security_answer_hash = %s 
+                    WHERE username = %s
+                ''', (new_password_hash, new_question, new_answer_hash, username))
+                conn.commit()
+                conn.close()
+
+                self.send_json_response({"success": True, "message": "Credentials updated successfully"})
             except Exception as e:
                 self.send_json_response({"success": False, "error": str(e)}, 500)
             return
