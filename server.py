@@ -30,6 +30,7 @@ except ImportError:
 
 PORT = int(os.environ.get('PORT', 8000))
 ADMIN_PASSCODE = os.environ.get('ADMIN_PASSCODE', 'mantra123')
+ACTIVE_SESSIONS = {}  # In-memory store for session tokens: token -> username
 
 # 2. Database Connection Settings (Loads environment variables first, defaults to local settings)
 MYSQL_HOST = os.environ.get('MYSQL_HOST', 'localhost')
@@ -82,9 +83,35 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS admin_users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                security_question VARCHAR(255) NOT NULL,
+                security_answer_hash VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Seed default admin if empty
+        c.execute("SELECT COUNT(*) FROM admin_users")
+        count = c.fetchone()[0]
+        if count == 0:
+            import hashlib
+            default_pass = ADMIN_PASSCODE
+            default_pass_hash = hashlib.sha256(default_pass.encode('utf-8')).hexdigest()
+            default_ans = "masala mantra"
+            default_ans_hash = hashlib.sha256(default_ans.lower().strip().encode('utf-8')).hexdigest()
+            c.execute('''
+                INSERT INTO admin_users (username, password_hash, security_question, security_answer_hash)
+                VALUES (%s, %s, %s, %s)
+            ''', ('admin', default_pass_hash, 'What is the name of this banquet hall?', default_ans_hash))
+            print("Default admin user ('admin') seeded successfully.")
+            
         conn.commit()
         conn.close()
-        print("MySQL database and table initialized successfully.")
+        print("MySQL database and tables initialized successfully.")
     except Exception as e:
         print(f"CRITICAL ERROR: Failed to connect to MySQL database! Please ensure MySQL server is running. Detail: {e}")
         sys.exit(1)
@@ -122,7 +149,7 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Fetch all inquiries (Admin Dashboard)
         if parsed_path.path == '/api/admin/inquiries':
             passcode = self.headers.get('X-Admin-Passcode')
-            if passcode != ADMIN_PASSCODE:
+            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
                 self.send_json_response({"error": "Unauthorized"}, 401)
                 return
 
@@ -229,7 +256,7 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Admin update inquiry status
         elif parsed_path.path == '/api/admin/update_status':
             passcode = self.headers.get('X-Admin-Passcode')
-            if passcode != ADMIN_PASSCODE:
+            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
                 self.send_json_response({"error": "Unauthorized"}, 401)
                 return
 
@@ -262,7 +289,7 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Admin delete inquiry
         elif parsed_path.path == '/api/admin/delete':
             passcode = self.headers.get('X-Admin-Passcode')
-            if passcode != ADMIN_PASSCODE:
+            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
                 self.send_json_response({"error": "Unauthorized"}, 401)
                 return
 
@@ -289,6 +316,120 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json_response({"success": True, "message": "Inquiry successfully deleted!"})
             except Exception as e:
                 self.send_json_response({"error": str(e)}, 500)
+            return
+
+        # API Route: Admin login
+        elif parsed_path.path == '/api/admin/login':
+            try:
+                import hashlib
+                import uuid
+                data = self.read_json_body()
+                username = data.get('username')
+                password = data.get('password')
+
+                if not username or not password:
+                    self.send_json_response({"success": False, "error": "Username and Password are required"}, 400)
+                    return
+
+                password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+
+                conn = pymysql.connect(
+                    host=MYSQL_HOST,
+                    port=MYSQL_PORT,
+                    user=MYSQL_USER,
+                    password=MYSQL_PASSWORD,
+                    database=MYSQL_DB,
+                    cursorclass=pymysql.cursors.DictCursor
+                )
+                c = conn.cursor()
+                c.execute('SELECT * FROM admin_users WHERE username = %s AND password_hash = %s', (username, password_hash))
+                user = c.fetchone()
+                conn.close()
+
+                if user:
+                    token = uuid.uuid4().hex
+                    ACTIVE_SESSIONS[token] = username
+                    self.send_json_response({"success": True, "token": token})
+                else:
+                    self.send_json_response({"success": False, "error": "Invalid username or password"}, 401)
+            except Exception as e:
+                self.send_json_response({"success": False, "error": str(e)}, 500)
+            return
+
+        # API Route: Fetch Security Question
+        elif parsed_path.path == '/api/admin/forgot-password/question':
+            try:
+                data = self.read_json_body()
+                username = data.get('username')
+
+                if not username:
+                    self.send_json_response({"success": False, "error": "Username is required"}, 400)
+                    return
+
+                conn = pymysql.connect(
+                    host=MYSQL_HOST,
+                    port=MYSQL_PORT,
+                    user=MYSQL_USER,
+                    password=MYSQL_PASSWORD,
+                    database=MYSQL_DB,
+                    cursorclass=pymysql.cursors.DictCursor
+                )
+                c = conn.cursor()
+                c.execute('SELECT security_question FROM admin_users WHERE username = %s', (username,))
+                user = c.fetchone()
+                conn.close()
+
+                if user:
+                    self.send_json_response({"success": True, "question": user['security_question']})
+                else:
+                    self.send_json_response({"success": False, "error": "Username not found"}, 404)
+            except Exception as e:
+                self.send_json_response({"success": False, "error": str(e)}, 500)
+            return
+
+        # API Route: Verify Answer & Reset Password
+        elif parsed_path.path == '/api/admin/forgot-password/reset':
+            try:
+                import hashlib
+                data = self.read_json_body()
+                username = data.get('username')
+                answer = data.get('answer')
+                new_password = data.get('new_password')
+
+                if not username or not answer or not new_password:
+                    self.send_json_response({"success": False, "error": "Username, answer, and new password are required"}, 400)
+                    return
+
+                answer_hash = hashlib.sha256(answer.lower().strip().encode('utf-8')).hexdigest()
+
+                conn = pymysql.connect(
+                    host=MYSQL_HOST,
+                    port=MYSQL_PORT,
+                    user=MYSQL_USER,
+                    password=MYSQL_PASSWORD,
+                    database=MYSQL_DB,
+                    cursorclass=pymysql.cursors.DictCursor
+                )
+                c = conn.cursor()
+                c.execute('SELECT security_answer_hash FROM admin_users WHERE username = %s', (username,))
+                user = c.fetchone()
+
+                if not user:
+                    conn.close()
+                    self.send_json_response({"success": False, "error": "Username not found"}, 404)
+                    return
+
+                if user['security_answer_hash'] == answer_hash:
+                    new_password_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
+                    c.execute('UPDATE admin_users SET password_hash = %s WHERE username = %s', (new_password_hash, username))
+                    conn.commit()
+                    conn.close()
+                    self.send_json_response({"success": True, "message": "Password updated successfully"})
+                else:
+                    conn.close()
+                    self.send_json_response({"success": False, "error": "Incorrect answer to security question"}, 400)
+            except Exception as e:
+                self.send_json_response({"success": False, "error": str(e)}, 500)
             return
 
         self.send_json_response({"error": "Not Found"}, 404)
