@@ -5,6 +5,46 @@ import os
 import urllib.parse
 import sys
 import datetime
+import hashlib
+import secrets
+
+def hash_password(password: str) -> str:
+    salt = secrets.token_hex(16)
+    iterations = 100000
+    dk = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), iterations)
+    return f"pbkdf2_sha256${iterations}${salt}${dk.hex()}"
+
+def verify_password(password: str, hashed_val: str) -> bool:
+    if not hashed_val.startswith("pbkdf2_sha256$"):
+        old_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        return old_hash == hashed_val
+    parts = hashed_val.split('$')
+    if len(parts) != 4:
+        return False
+    _, iterations, salt, hash_hex = parts
+    iterations = int(iterations)
+    dk = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), iterations)
+    return dk.hex() == hash_hex
+
+def hash_security_answer(answer: str) -> str:
+    salt = secrets.token_hex(16)
+    iterations = 100000
+    cleaned = answer.lower().strip()
+    dk = hashlib.pbkdf2_hmac('sha256', cleaned.encode('utf-8'), salt.encode('utf-8'), iterations)
+    return f"pbkdf2_sha256${iterations}${salt}${dk.hex()}"
+
+def verify_security_answer(answer: str, hashed_val: str) -> bool:
+    cleaned = answer.lower().strip()
+    if not hashed_val.startswith("pbkdf2_sha256$"):
+        old_hash = hashlib.sha256(cleaned.encode('utf-8')).hexdigest()
+        return old_hash == hashed_val
+    parts = hashed_val.split('$')
+    if len(parts) != 4:
+        return False
+    _, iterations, salt, hash_hex = parts
+    iterations = int(iterations)
+    dk = hashlib.pbkdf2_hmac('sha256', cleaned.encode('utf-8'), salt.encode('utf-8'), iterations)
+    return dk.hex() == hash_hex
 
 # Ensure the server runs in the script's directory so it can resolve index.html and assets
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -109,11 +149,10 @@ def init_db():
         c.execute("SELECT COUNT(*) FROM admin_users")
         count = c.fetchone()[0]
         if count == 0:
-            import hashlib
             default_pass = ADMIN_PASSCODE
-            default_pass_hash = hashlib.sha256(default_pass.encode('utf-8')).hexdigest()
+            default_pass_hash = hash_password(default_pass)
             default_ans = "masala mantra"
-            default_ans_hash = hashlib.sha256(default_ans.lower().strip().encode('utf-8')).hexdigest()
+            default_ans_hash = hash_security_answer(default_ans)
             c.execute('''
                 INSERT INTO admin_users (username, password_hash, security_question, security_answer_hash)
                 VALUES (%s, %s, %s, %s)
@@ -213,66 +252,97 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, format, *args):
         super().log_message(format, *args)
 
+    def get_cors_origin(self):
+        origin = self.headers.get('Origin')
+        if origin:
+            parsed = urllib.parse.urlparse(origin)
+            hostname = parsed.hostname
+            # Allow local development origins safely
+            if hostname in ('localhost', '127.0.0.1') or (hostname and hostname.startswith('192.168.')):
+                return origin
+        return None
+
     def do_OPTIONS(self):
         self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Passcode')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        origin = self.get_cors_origin()
+        if origin:
+            self.send_header('Access-Control-Allow-Origin', origin)
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Passcode')
+            self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Credentials', 'true')
         self.end_headers()
 
     def do_GET(self):
+        parsed_path = urllib.parse.urlparse(self.path)
+        path_str = parsed_path.path
+
+        # Prevent Directory Traversal
+        if '..' in path_str or '\\' in path_str:
+            self.send_error(400, "Bad Request")
+            return
+
         # Reroute root to index.html
-        if self.path == '/' or self.path == '/index.html':
+        if path_str == '/' or path_str == '/index.html':
             self.path = '/index.html'
             return super().do_GET()
 
-        parsed_path = urllib.parse.urlparse(self.path)
-        
-        # API Route: Fetch all inquiries (Admin Dashboard)
-        if parsed_path.path == '/api/admin/inquiries':
-            passcode = self.headers.get('X-Admin-Passcode')
-            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
-                self.send_json_response({"error": "Unauthorized"}, 401)
+        # If it's an API route, let it pass to handling logic
+        if path_str.startswith('/api/'):
+            # API Route: Fetch all inquiries (Admin Dashboard)
+            if path_str == '/api/admin/inquiries':
+                passcode = self.headers.get('X-Admin-Passcode')
+                if not passcode or passcode not in ACTIVE_SESSIONS:
+                    self.send_json_response({"error": "Unauthorized"}, 401)
+                    return
+
+                try:
+                    conn = pymysql.connect(
+                        host=MYSQL_HOST,
+                        port=MYSQL_PORT,
+                        user=MYSQL_USER,
+                        password=MYSQL_PASSWORD,
+                        database=MYSQL_DB,
+                        cursorclass=pymysql.cursors.DictCursor
+                    )
+                    c = conn.cursor()
+                    c.execute('SELECT * FROM inquiries ORDER BY created_at DESC')
+                    rows = c.fetchall()
+                    conn.close()
+
+                    self.send_json_response(rows)
+                except Exception as e:
+                    self.send_json_response({"error": str(e)}, 500)
                 return
 
-            try:
-                conn = pymysql.connect(
-                    host=MYSQL_HOST,
-                    port=MYSQL_PORT,
-                    user=MYSQL_USER,
-                    password=MYSQL_PASSWORD,
-                    database=MYSQL_DB,
-                    cursorclass=pymysql.cursors.DictCursor
-                )
-                c = conn.cursor()
-                c.execute('SELECT * FROM inquiries ORDER BY created_at DESC')
-                rows = c.fetchall()
-                conn.close()
+            # API Route: Fetch all showcase photos
+            elif path_str == '/api/photos':
+                try:
+                    conn = pymysql.connect(
+                        host=MYSQL_HOST,
+                        port=MYSQL_PORT,
+                        user=MYSQL_USER,
+                        password=MYSQL_PASSWORD,
+                        database=MYSQL_DB,
+                        cursorclass=pymysql.cursors.DictCursor
+                    )
+                    c = conn.cursor()
+                    c.execute('SELECT * FROM showcase_photos ORDER BY created_at DESC')
+                    rows = c.fetchall()
+                    conn.close()
 
-                self.send_json_response(rows)
-            except Exception as e:
-                self.send_json_response({"error": str(e)}, 500)
+                    self.send_json_response(rows)
+                except Exception as e:
+                    self.send_json_response({"error": str(e)}, 500)
+                return
+
+            self.send_json_response({"error": "Not Found"}, 404)
             return
 
-        # API Route: Fetch all showcase photos
-        elif parsed_path.path == '/api/photos':
-            try:
-                conn = pymysql.connect(
-                    host=MYSQL_HOST,
-                    port=MYSQL_PORT,
-                    user=MYSQL_USER,
-                    password=MYSQL_PASSWORD,
-                    database=MYSQL_DB,
-                    cursorclass=pymysql.cursors.DictCursor
-                )
-                c = conn.cursor()
-                c.execute('SELECT * FROM showcase_photos ORDER BY created_at DESC')
-                rows = c.fetchall()
-                conn.close()
-
-                self.send_json_response(rows)
-            except Exception as e:
-                self.send_json_response({"error": str(e)}, 500)
+        # Secure Static File Serving: Extension Whitelisting
+        allowed_extensions = {'.html', '.css', '.js', '.png', '.jpg', '.jpeg', '.webp', '.svg', '.ico', '.woff', '.woff2'}
+        _, ext = os.path.splitext(path_str)
+        if ext.lower() not in allowed_extensions:
+            self.send_error(403, "Access Forbidden")
             return
 
         return super().do_GET()
@@ -359,7 +429,7 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Admin update inquiry status
         elif parsed_path.path == '/api/admin/update_status':
             passcode = self.headers.get('X-Admin-Passcode')
-            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
+            if not passcode or passcode not in ACTIVE_SESSIONS:
                 self.send_json_response({"error": "Unauthorized"}, 401)
                 return
 
@@ -392,7 +462,7 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Admin delete inquiry
         elif parsed_path.path == '/api/admin/delete':
             passcode = self.headers.get('X-Admin-Passcode')
-            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
+            if not passcode or passcode not in ACTIVE_SESSIONS:
                 self.send_json_response({"error": "Unauthorized"}, 401)
                 return
 
@@ -424,7 +494,6 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Admin login
         elif parsed_path.path == '/api/admin/login':
             try:
-                import hashlib
                 import uuid
                 data = self.read_json_body()
                 username = data.get('username')
@@ -433,8 +502,6 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                 if not username or not password:
                     self.send_json_response({"success": False, "error": "Username and Password are required"}, 400)
                     return
-
-                password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
                 conn = pymysql.connect(
                     host=MYSQL_HOST,
@@ -445,11 +512,30 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                     cursorclass=pymysql.cursors.DictCursor
                 )
                 c = conn.cursor()
-                c.execute('SELECT * FROM admin_users WHERE username = %s AND password_hash = %s', (username, password_hash))
+                c.execute('SELECT * FROM admin_users WHERE username = %s', (username,))
                 user = c.fetchone()
                 conn.close()
 
-                if user:
+                if user and verify_password(password, user['password_hash']):
+                    # Auto-upgrade password hash if it's in the old unsalted format
+                    if not user['password_hash'].startswith("pbkdf2_sha256$"):
+                        try:
+                            new_hash = hash_password(password)
+                            conn_upgrade = pymysql.connect(
+                                host=MYSQL_HOST,
+                                port=MYSQL_PORT,
+                                user=MYSQL_USER,
+                                password=MYSQL_PASSWORD,
+                                database=MYSQL_DB
+                            )
+                            c_up = conn_upgrade.cursor()
+                            c_up.execute('UPDATE admin_users SET password_hash = %s WHERE id = %s', (new_hash, user['id']))
+                            conn_upgrade.commit()
+                            conn_upgrade.close()
+                            print(f"Password hash auto-upgraded to PBKDF2 for user: {username}")
+                        except Exception as upgrade_err:
+                            print(f"Failed to auto-upgrade password hash: {upgrade_err}")
+
                     token = uuid.uuid4().hex
                     ACTIVE_SESSIONS[token] = username
                     self.send_json_response({"success": True, "token": token})
@@ -493,7 +579,6 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Verify Answer & Reset Password
         elif parsed_path.path == '/api/admin/forgot-password/reset':
             try:
-                import hashlib
                 data = self.read_json_body()
                 username = data.get('username')
                 answer = data.get('answer')
@@ -502,8 +587,6 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                 if not username or not answer or not new_password:
                     self.send_json_response({"success": False, "error": "Username, answer, and new password are required"}, 400)
                     return
-
-                answer_hash = hashlib.sha256(answer.lower().strip().encode('utf-8')).hexdigest()
 
                 conn = pymysql.connect(
                     host=MYSQL_HOST,
@@ -522,8 +605,8 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                     self.send_json_response({"success": False, "error": "Username not found"}, 404)
                     return
 
-                if user['security_answer_hash'] == answer_hash:
-                    new_password_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
+                if verify_security_answer(answer, user['security_answer_hash']):
+                    new_password_hash = hash_password(new_password)
                     c.execute('UPDATE admin_users SET password_hash = %s WHERE username = %s', (new_password_hash, username))
                     conn.commit()
                     conn.close()
@@ -538,15 +621,21 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Upload Showcase Photo
         elif parsed_path.path == '/api/admin/photos/upload':
             passcode = self.headers.get('X-Admin-Passcode')
-            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
+            if not passcode or passcode not in ACTIVE_SESSIONS:
                 self.send_json_response({"error": "Unauthorized"}, 401)
                 return
 
             try:
-                content_type = self.headers.get('Content-Type')
+                content_type = self.headers.get('Content-Type', '')
                 content_length = int(self.headers.get('Content-Length', 0))
-                body_bytes = self.rfile.read(content_length)
+                
+                # Protect against excessive upload size at server level
+                max_size = 5 * 1024 * 1024  # 5 MB
+                if content_length > max_size * 1.1:  # Allow 10% overhead for multipart headers
+                    self.send_json_response({"success": False, "error": "Uploaded payload is too large. Max allowed is 5MB."}, 400)
+                    return
 
+                body_bytes = self.rfile.read(content_length)
                 fields, files = parse_multipart(content_type, body_bytes)
 
                 category = fields.get('category')
@@ -559,12 +648,34 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                     self.send_json_response({"success": False, "error": "Category, Title, and Image are required"}, 400)
                     return
 
+                # Validate category
+                allowed_categories = {'wedding', 'community', 'dining', 'terrace'}
+                if category not in allowed_categories:
+                    self.send_json_response({"success": False, "error": "Invalid hall category specified."}, 400)
+                    return
+
+                # Validate file size
+                if len(image_file['content']) > max_size:
+                    self.send_json_response({"success": False, "error": "Image file size exceeds the 5MB limit."}, 400)
+                    return
+
+                # Validate extension
+                filename = image_file['filename']
+                ext = os.path.splitext(filename)[1].lower()
+                allowed_extensions = {'.jpg', '.jpeg', '.png', '.webp'}
+                if ext not in allowed_extensions:
+                    self.send_json_response({"success": False, "error": f"Invalid file type {ext}. Only JPG, PNG, WEBP allowed."}, 400)
+                    return
+
+                # Validate MIME content-type
+                mime_type = image_file.get('content_type', '').lower()
+                allowed_mimes = {'image/jpeg', 'image/jpg', 'image/png', 'image/webp'}
+                if mime_type not in allowed_mimes:
+                    self.send_json_response({"success": False, "error": "Invalid MIME type. Only image uploads allowed."}, 400)
+                    return
+
                 # Save file
                 import uuid
-                filename = image_file['filename']
-                ext = os.path.splitext(filename)[1]
-                if not ext:
-                    ext = '.jpg'
                 unique_filename = f"{uuid.uuid4().hex}{ext}"
                 
                 upload_dir = os.path.join(script_dir, 'uploads')
@@ -600,7 +711,7 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Delete Showcase Photo
         elif parsed_path.path == '/api/admin/photos/delete':
             passcode = self.headers.get('X-Admin-Passcode')
-            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
+            if not passcode or passcode not in ACTIVE_SESSIONS:
                 self.send_json_response({"error": "Unauthorized"}, 401)
                 return
 
@@ -652,7 +763,7 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
         # API Route: Change Admin Credentials
         elif parsed_path.path == '/api/admin/change-credentials':
             passcode = self.headers.get('X-Admin-Passcode')
-            if passcode != ADMIN_PASSCODE and passcode not in ACTIVE_SESSIONS:
+            if not passcode or passcode not in ACTIVE_SESSIONS:
                 self.send_json_response({"error": "Unauthorized"}, 401)
                 return
 
@@ -661,7 +772,6 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                 username = 'admin'
 
             try:
-                import hashlib
                 data = self.read_json_body()
                 current_password = data.get('current_password')
                 new_password = data.get('new_password')
@@ -671,8 +781,6 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                 if not current_password or not new_password or not new_question or not new_answer:
                     self.send_json_response({"success": False, "error": "All fields are required"}, 400)
                     return
-
-                current_password_hash = hashlib.sha256(current_password.encode('utf-8')).hexdigest()
 
                 conn = pymysql.connect(
                     host=MYSQL_HOST,
@@ -687,14 +795,14 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
                 c.execute('SELECT password_hash FROM admin_users WHERE username = %s', (username,))
                 user = c.fetchone()
 
-                if not user or user['password_hash'] != current_password_hash:
+                if not user or not verify_password(current_password, user['password_hash']):
                     conn.close()
                     self.send_json_response({"success": False, "error": "Incorrect current password"}, 400)
                     return
 
                 # Update password, question, and answer
-                new_password_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
-                new_answer_hash = hashlib.sha256(new_answer.lower().strip().encode('utf-8')).hexdigest()
+                new_password_hash = hash_password(new_password)
+                new_answer_hash = hash_security_answer(new_answer)
 
                 c.execute('''
                     UPDATE admin_users 
@@ -719,9 +827,12 @@ class BanquetServerHandler(http.server.SimpleHTTPRequestHandler):
     def send_json_response(self, data, status=200):
         self.send_response(status)
         self.send_header('Content-Type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Passcode')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        origin = self.get_cors_origin()
+        if origin:
+            self.send_header('Access-Control-Allow-Origin', origin)
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Passcode')
+            self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Credentials', 'true')
         self.end_headers()
         self.wfile.write(json.dumps(data, cls=DateTimeEncoder).encode('utf-8'))
 

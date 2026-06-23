@@ -5,3 +5,14 @@ __pycache__/
 *.log
 .vscode/
 .idea/
+
+# Credentials and environment configurations
+.env
+.env.*
+.env.local
+env/
+venv/
+.venv/
+
+# User uploads (uploaded showcase images)
+uploads/
