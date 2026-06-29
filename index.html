@@ -179,13 +179,21 @@
         </div>
 
         <div class="showcase-grid" id="showcase-grid">
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted-light); font-size: 1.1rem;">
-                <div class="spinner" style="border: 3px solid rgba(212, 175, 55, 0.1); border-radius: 50%; border-top: 3px solid var(--gold-primary); width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <div
+                style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted-light); font-size: 1.1rem;">
+                <div class="spinner"
+                    style="border: 3px solid rgba(212, 175, 55, 0.1); border-radius: 50%; border-top: 3px solid var(--gold-primary); width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;">
+                </div>
                 Loading our exquisite setups...
                 <style>
                     @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
+                        0% {
+                            transform: rotate(0deg);
+                        }
+
+                        100% {
+                            transform: rotate(360deg);
+                        }
                     }
                 </style>
             </div>
@@ -727,7 +735,8 @@
 
                         <div class="step-buttons">
                             <button type="button" class="btn-outline" id="btn-prev-2">Previous</button>
-                            <button type="submit" class="btn-primary" id="btn-submit-booking">Confirm Inquiry Details</button>
+                            <button type="submit" class="btn-primary" id="btn-submit-booking">Confirm Inquiry
+                                Details</button>
                         </div>
                     </div>
                 </form>

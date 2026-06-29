@@ -165,15 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Pricing models definition
     const basePrices = {
-        wedding: 75000,
-        corporate: 45000,
-        social: 25000
+        wedding: 250000,
+        corporate: 180000,
+        social: 120000
     };
 
     const cateringPrices = {
-        classic: 450,
-        elite: 650,
-        imperial: 950
+        classic: 800,
+        elite: 1200,
+        imperial: 2200
     };
 
     let totalAnimationTimer = null;
